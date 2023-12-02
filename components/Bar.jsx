@@ -10,17 +10,14 @@ import { API_URL, DEFAULT_HEADER } from "@/lib/contants";
 import axios from "axios";
 import Loader from "./Loader";
 import { useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
- 
-  selectVisitorData,
   setData,
   setError,
   setLoading,
 } from "@/src/store/features/visitorSlice";
 import Spinner from "./Spinner";
 
-// const fetchDataFromApi = 
 
 const Bar = () => {
   const dispatch = useDispatch();
@@ -30,32 +27,57 @@ const Bar = () => {
 
   // Initialize menuRef with useRef(null)
   const menuRef = useRef(null);
-
-  const {data,isLoading,isError,error} = useQuery(
+  const { data, isLoading, isError, error } = useQuery(
     "news-visitor",
     async () => {
-      try {
-        dispatch(setLoading(isLoading));
-        const res = await axios.get(
-          `${API_URL}/api/zimomeet_app/news-visitors?lat=${latitude}&lng=${longitude}`,
-          {
-            headers: DEFAULT_HEADER,
-          }
-        );
-        // Save data to localStorage
-        localStorage.setItem("visitor", JSON.stringify(res.data));
-        return res.data
-        
-      } catch (error) {
-        dispatch(setError(true));
-      } finally {
-        dispatch(setLoading(isLoading));
+      const visitorDataFromLocalStorage = JSON.parse(localStorage.getItem("visitor"));
+      if(!visitorDataFromLocalStorage){
+        try {
+          dispatch(setLoading(true));
+          const res = await axios.get(
+            `${API_URL}/api/zimomeet_app/news-visitors?lat=${latitude}&lng=${longitude}`,
+            {
+              headers: DEFAULT_HEADER,
+            }
+          );
+          // Save data to localStorage
+          localStorage.setItem("visitor", JSON.stringify(res.data));
+          dispatch(setData(data?.visitor_data));
+          return res.data;
+
+        } catch (error) {
+          dispatch(setError(true));
+        } finally {
+          dispatch(setLoading(false));
+        }
+      }
+      else{
+        dispatch(setData(visitorDataFromLocalStorage.visitor_data));
       }
     }
-    )
-    dispatch(setData(data?.visitor_data));
-  console.log(data)
-console.log('visitorData:',data?.visitor_data)
+  );
+  const findMyState = () => {
+    const success = (position) => {
+      const latitude = position.coords.latitude;
+      const longitude = position.coords.longitude;
+      setLongitude(longitude);
+      setlatitude(latitude);
+    };
+
+    const error = () => {
+      console.log("Unable to retrieve your Location");
+    };
+    navigator.geolocation.getCurrentPosition(success, error);
+
+    if(latitude ==='' && longitude==''){
+
+    }
+else{
+  
+}
+  };
+ 
+
 
   const MoreClickHandler = useMemo(
     () => () => {
@@ -73,23 +95,6 @@ console.log('visitorData:',data?.visitor_data)
     [menuRef]
   );
 
-  const findMyState = () => {
-    const success = (position) => {
-      const latitude = position.coords.latitude;
-      const longitude = position.coords.longitude;
-      setLongitude(longitude);
-      setlatitude(latitude);
-    };
-
-    const error = () => {
-      console.log("Unable to retrieve your Location");
-    };
-    navigator.geolocation.getCurrentPosition(success, error);
-  };
-
-
-  
-
 
   useEffect(() => {
     findMyState();
@@ -102,31 +107,32 @@ console.log('visitorData:',data?.visitor_data)
     };
   }, [handleClickOutside, findMyState]);
 
-
-
   return (
     <div>
-      {
-        isLoading?<Spinner/>:<> <header className="hidden lg:flex justify-between items-center">
-        <News
-          MoreClickHandler={MoreClickHandler}
-          isOpen={isOpen}
-          menuRef={menuRef}
-        />
-        {isLoading ? <Spinner /> : <Navbar />}{" "}
-        <More
-          MoreClickHandler={MoreClickHandler}
-          isOpen={isOpen}
-          menuRef={menuRef}
-        />
-      </header>
-
-      <header className="lg:hidden">
-        <SideBarTwo menuRef={menuRef} />
-        <Alert />
-      </header></>
-      }
-     
+      {isLoading ? (
+        <Spinner />
+      ) : (
+        <>
+          {" "}
+          <header className="hidden lg:flex justify-between items-center">
+            <News
+              MoreClickHandler={MoreClickHandler}
+              isOpen={isOpen}
+              menuRef={menuRef}
+            />
+            <Navbar />
+            <More
+              MoreClickHandler={MoreClickHandler}
+              isOpen={isOpen}
+              menuRef={menuRef}
+            />
+          </header>
+          <header className="lg:hidden">
+            <SideBarTwo menuRef={menuRef} />
+            <Alert />
+          </header>
+        </>
+      )}
     </div>
   );
 };

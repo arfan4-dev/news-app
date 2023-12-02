@@ -32,50 +32,54 @@ const Navbar = () => {
   );
   console.log('useSelector',visitorData)
 
-if(isLoading){
-  return <Spinner/>
-}
-  return (
-    <div className="flex flex-col items-center space-y-4 ">
-        <nav className="mb-10"> 
-      <ul className={`md:flex md:items-center md:space-x-2  xl:flex xl:items-center  lg:space-x-3 xl:space-x-4 2xl:space-x-6  3xl:space-x-[22px]`}>
-        <li className='flex'>
-          <img
-            className="w-[40px] h-[30px]  xl:w-[45px] xl:h-[33px]   3xl:w-[67px] 3xl:h-[50px] "
-            src="/assets/NewsLogo.svg"
-            alt=""
-          />{" "}
-          <img
-            className="w-[40px] h-[30px]  xl:w-[65px] xl:h-[34px] 3xl:w-[86px] 3xl:h-[50px] "
-            src="/assets/zimaNewsLogo.svg"
-            alt=""
-          />
-        </li>
+// if(isLoading){
+//   return <Spinner/>
+// }
+  return (  
+    
+   <div>
+    {
+      !isLoading &&  <div className="flex flex-col items-center space-y-4 ">
+      <nav className="mb-10"> 
+    <ul className={`md:flex md:items-center md:space-x-2  xl:flex xl:items-center  lg:space-x-3 xl:space-x-4 2xl:space-x-6  3xl:space-x-[22px]`}>
+      <li className='flex'>
+        <img
+          className="w-[40px] h-[30px]  xl:w-[45px] xl:h-[33px]   3xl:w-[67px] 3xl:h-[50px] "
+          src="/assets/NewsLogo.svg"
+          alt=""
+        />{" "}
+        <img
+          className="w-[40px] h-[30px]  xl:w-[65px] xl:h-[34px] 3xl:w-[86px] 3xl:h-[50px] "
+          src="/assets/zimaNewsLogo.svg"
+          alt=""
+        />
+      </li>
 
-        { data.map((val, index) => {
-          return (
-            <div className="category category1" key={index}>
-              <Link href={`${val.id}`}>
-                <span className='min-[320px]:text-[10px] xl:text-[12px] 2xl:text-[14px] tracking-[2px]'>{val.name.toUpperCase()}</span>
-              </Link>
-              
-            </div>
-          );
-        }) 
-      
-      }
+      { data.map((val, index) => {
+        return (
+          <div className="category category1" key={index}>
+            <Link href={`${val.id}`}>
+              <span className='min-[320px]:text-[10px] xl:text-[12px] 2xl:text-[14px] tracking-[2px]'>{val.name.toUpperCase()}</span>
+            </Link>
+            
+          </div>
+        );
+      }) 
+    
+    }
 
-        <li>
-        {/* <img src={visitorData.visitor_data.country.app_icon} className="w-[34px] h-[34px] xl:w-[45px] xl:h-[50px]" alt="" /> */}
-                <img src={'/assets/UK.svg'} className="w-[34px] h-[34px] xl:w-[45px] xl:h-[50px]" alt="" />
+      <li>
+      <img src={visitorData.country.app_icon} className="w-[34px] h-[34px] xl:w-[45px] xl:h-[50px]" alt="" />
 
-        </li>
-      </ul>
-    </nav>
-      
-      <Alert/>
-      
-    </div>
+      </li>
+    </ul>
+  </nav>
+    
+    <Alert/>
+    
+  </div>
+    }
+   </div>
   
   );
 };
